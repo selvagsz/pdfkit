@@ -1,4 +1,5 @@
 require 'uri'
+require 'tempfile'
 
 class PDFKit
   class Source
@@ -32,6 +33,18 @@ class PDFKit
 
     def to_s
       file? ? @source.path : @source
+    end
+
+    def to_tmp_file
+      if self.html?
+        tmpfile = Tempfile.new(['', '.html'], './tmp')
+        tmpfile.write(self.to_s)
+        tmpfile.rewind
+        tmpfile.close
+        Source.new(tmpfile)
+      else
+        self
+      end
     end
 
     private
